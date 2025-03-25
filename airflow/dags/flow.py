@@ -1,35 +1,27 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
-import subprocess
+import schedule
+import time
+from src.scraper.parser import parse_boxoffice_mojo
+from src.scraper.storage import save_to_csv
+import os
 
-# Параметры DAG
-default_args = {
-    "owner": "airflow",
-    "depends_on_past": False,
-    "start_date": datetime(2025, 3, 23),
-    "retries": 2,
-    "retry_delay": timedelta(minutes=5),
-}
+def job():
+    print("Запуск сбора данных...")
+    movies = parse_boxoffice_mojo()
+    if movies:
+        # Указываем путь для сохранения файла в папку data
+        data_folder = "../../data"
+        if not os.path.exists(data_folder):
+            os.makedirs(data_folder)  # Создаём папку, если её нет
+        save_to_csv(movies, os.path.join(data_folder, "movies.csv"))
+        print("Сбор данных завершён, данные сохранены.")
+    else:
+        print("Нет данных для сохранения.")
 
-# Функция для запуска main.py
-def run_scraper():
-    subprocess.run(["python", "/path/to/main.py"], check=True)
+# Планируем запуск каждый день в 9:00 утра
+schedule.every().day.at("09:00").do(job)
 
-# Определяем DAG
-dag = DAG(
-    "hh_scraper",
-    default_args=default_args,
-    description="Парсер вакансий системных аналитиков с hh.ru",
-    schedule_interval="0 9 * * *",  # Запуск каждый день в 9:00
-    catchup=False,
-)
+print("Планировщик запущен. Ожидание следующего запуска...")
 
-# Создаём задачу
-scraper_task = PythonOperator(
-    task_id="run_scraper",
-    python_callable=run_scraper,
-    dag=dag,
-)
-
-scraper_task
+while True:
+    schedule.run_pending()
+    time.sleep(60)  # Проверяем каждую минуту
