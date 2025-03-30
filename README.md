@@ -16,7 +16,7 @@ This Python project is designed to scrape statistics about popular movies (Lates
 ### 2. Data Analysis
    - **Script**: `src/analysis/cli.py <file_path>` 
    - **Description**: Analyzes the collected movie data, generating insights such as trends and statistics and making corresponding charts. 
-   - **Collected movies data and analysis results**: https://drive.google.com/drive/folders/1XjMVG4IoDzCp7jmNPmM97u6RqfXHp\_sb?usp=sharingV
+   - **Collected movies data and analysis results**: https://drive.google.com/drive/folders/1XjMVG4IoDzCp7jmNPmM97u6RqfXHp_sb?usp=sharingV
    - **Output**: Excel reports and PNG visualizations.
    - **Example usage**:
      ```sh
