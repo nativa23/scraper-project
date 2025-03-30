@@ -9,7 +9,7 @@ def job():
     movies = parse_boxoffice_mojo()
     if movies:
         # Указываем путь для сохранения файла в папку data
-        data_folder = "../../data"
+        data_folder = os.path.join("..", "..", "data")
         if not os.path.exists(data_folder):
             os.makedirs(data_folder)  # Создаём папку, если её нет
         save_to_csv(movies, os.path.join(data_folder, "movies.csv"))
@@ -18,10 +18,8 @@ def job():
         print("Нет данных для сохранения.")
 
 # Планируем запуск каждый день в 9:00 утра
-schedule.every().day.at("09:00").do(job)
+# schedule.every().day.at("09:00").do(job)
 
-print("Планировщик запущен. Ожидание следующего запуска...")
-
-while True:
-    schedule.run_pending()
-    time.sleep(60)  # Проверяем каждую минуту
+# Запускаем задачу, когда скрипт будет вызван Планировщиком
+if __name__ == "__main__":
+    job()
