@@ -25,13 +25,15 @@ def load_data(file_path):
 # Основной анализ
 def analyze_data(df):
     # Группировка по регионам и вычисление суммарных сборов
-    region_gross = df.groupby('Area')['Weekend Gross'].sum().sort_values(ascending=False)
+    region_gross = df.groupby("Area")["Weekend Gross"].sum().sort_values(ascending=False).head(20)
 
     # Группировка по фильмам и вычисление суммарных сборов
     film_gross = df.groupby('#1 Release')['Weekend Gross'].sum().sort_values(ascending=False)
 
     # Динамика сборов по неделям
-    weekly_gross = df.groupby(df['Weekend'])['Weekend Gross'].sum()
+    weekly_gross = df.groupby([df['Month'], df['Start Day']])['Weekend Gross'].sum().sort_values(
+        ascending=False).sort_index()
+
 
     # Топ фильмов по количеству недель на первом месте
     top_releases = df['#1 Release'].value_counts()
@@ -48,12 +50,13 @@ def save_results(data_dir, region_gross, film_gross, weekly_gross, top_releases)
     # Гистограмма сборов по регионам
     plt.figure(figsize=(10, 6))
     region_gross.plot(kind='bar', color='skyblue')
-    plt.title('Суммарные сборы по регионам')
+    plt.title('Суммарные сборы по ТОП-20 регионам')
     plt.xlabel('Регион')
     plt.ylabel('Сборы')
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.savefig(os.path.join(data_dir, "region_gross_hist.png"))
+
 
     # Гистограмма сборов по фильмам
     plt.figure(figsize=(10, 6))
